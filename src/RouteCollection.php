@@ -110,10 +110,9 @@ final class RouteCollection implements RouteCollectionInterface
         $items = $group->getItems();
         foreach ($items as $index => $item) {
             $groupMiddlewares = $group->getMiddlewares();
-            foreach ($groupMiddlewares as $middleware) {
-                $item = $item->addMiddleware($middleware);
+            while ($middleware = array_pop($groupMiddlewares)) {
+                $item = $item->prependMiddleware($middleware);
             }
-
             if ($item instanceof Group) {
                 if (empty($item->getPrefix())) {
                     $this->injectGroup($item, $tree, $prefix);

@@ -19,6 +19,7 @@ final class Route
     private ?string $host = null;
     private bool $override = false;
     private ?MiddlewareDispatcher $dispatcher = null;
+    private $handlerDefinition;
 
     /**
      * @var array[]|callable[]|string[]
@@ -49,7 +50,7 @@ final class Route
             return $this->dispatcher;
         }
 
-        return $this->dispatcher = $this->dispatcher->withMiddlewares($this->middlewareDefinitions);
+        return $this->dispatcher = $this->dispatcher->withMiddlewares(array_merge($this->middlewareDefinitions, [$this->handlerDefinition]));
     }
 
     public function hasDispatcher(): bool
@@ -144,7 +145,7 @@ final class Route
     /**
      * @param array $methods
      * @param string $pattern
-     * @param array|callable|string|null $middlewareDefinition primary route handler {@see addMiddleware()}
+     * @param array|callable|string|null $handlerDefinition primary route handler {@see getDispatcherWithMiddlewares()}
      * @param MiddlewareDispatcher|null $dispatcher
      *
      * @return self
@@ -152,14 +153,14 @@ final class Route
     public static function methods(
         array $methods,
         string $pattern,
-        $middlewareDefinition = null,
+        $handlerDefinition = null,
         ?MiddlewareDispatcher $dispatcher = null
     ): self {
         $route = new self($dispatcher);
         $route->methods = $methods;
         $route->pattern = $pattern;
-        if ($middlewareDefinition !== null) {
-            $route->middlewareDefinitions[] = $middlewareDefinition;
+        if ($handlerDefinition !== null) {
+            $route->handlerDefinition = $handlerDefinition;
         }
         return $route;
     }
@@ -225,7 +226,6 @@ final class Route
 
     /**
      * Adds a handler middleware that should be invoked for a matched route.
-     * Last added handler will be executed first.
      *
      * @param array|callable|string $middlewareDefinition A PSR-15 middleware class name, handler action
      * (an array of [handlerClass, handlerMethod]) or a callable with
@@ -240,6 +240,13 @@ final class Route
     {
         $route = clone $this;
         $route->middlewareDefinitions[] = $middlewareDefinition;
+        return $route;
+    }
+
+    public function prependMiddleware($middlewareDefinition): self
+    {
+        $route = clone $this;
+        array_unshift($route->middlewareDefinitions, $middlewareDefinition);
         return $route;
     }
 

@@ -16,6 +16,12 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/router"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../middleware-dispatcher"
+        }
+    ],
     "require": {
         "php": "^7.4|^8.0",
         "psr/container": "^1.0",
@@ -24,7 +30,7 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "yiisoft/http": "^1.0",
-        "yiisoft/middleware-dispatcher": "^1.0@dev",
+        "yiisoft/middleware-dispatcher": "dev-proposal-natural-middleware-ordering",
         "yiisoft/router-implementation": "1.0.0"
     },
     "require-dev": {

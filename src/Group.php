@@ -139,7 +139,6 @@ final class Group implements RouteCollectorInterface
 
     /**
      * Adds a handler middleware that should be invoked for a matched route.
-     * Last added handler will be executed first.
      *
      * @param array|callable|MiddlewareInterface|string $middleware An instance or a name of PSR-15 middleware,
      * handler action (an array of [handlerClass, handlerMethod]) or a callable with
@@ -154,6 +153,14 @@ final class Group implements RouteCollectorInterface
     {
         $this->validateMiddleware($middleware);
         $this->middlewares[] = $middleware;
+
+        return $this;
+    }
+
+    public function prependMiddleware($middleware): self
+    {
+        $this->validateMiddleware($middleware);
+        array_unshift($this->middlewares, $middleware);
 
         return $this;
     }
