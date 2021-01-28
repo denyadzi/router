@@ -19,6 +19,9 @@ final class Route
     private ?string $host = null;
     private bool $override = false;
     private ?MiddlewareDispatcher $dispatcher = null;
+    /**
+     * @var array|callable|string
+     */
     private $handlerDefinition;
 
     /**
@@ -49,8 +52,9 @@ final class Route
         if ($this->dispatcher->hasMiddlewares()) {
             return $this->dispatcher;
         }
-
-        return $this->dispatcher = $this->dispatcher->withMiddlewares(array_merge($this->middlewareDefinitions, [$this->handlerDefinition]));
+        return $this->dispatcher = $this->dispatcher->withMiddlewares(
+            $this->handlerDefinition ? [...$this->middlewareDefinitions, $this->handlerDefinition] : $this->middlewareDefinitions
+        );
     }
 
     public function hasDispatcher(): bool
